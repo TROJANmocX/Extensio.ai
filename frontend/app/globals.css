@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+:root {
+  --background: #030014;
+  --foreground: #f3f4f6;
+  --purple-glow: rgba(139, 92, 246, 0.15);
+  --blue-glow: rgba(59, 130, 246, 0.15);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+}
+
+/* Custom Cyber Mesh Grid Background */
+.bg-grid {
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+}
+
+/* Radial Glow Orbs */
+.purple-orb {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.blue-orb {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(139, 92, 246, 0.25);
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.08);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Premium Scrollbar styling matching Cursor and Vercel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+/* Neon animated borders */
+@keyframes borderPulse {
+  0%, 100% { border-color: rgba(139, 92, 246, 0.2); }
+  50% { border-color: rgba(139, 92, 246, 0.6); }
+}
+
+.animate-border-pulse {
+  animation: borderPulse 4s infinite;
+}
+
+/* Syntax Token Colors (Custom High-Fidelity Highlighting) */
+.token-keyword { color: #f472b6; font-weight: 500; }
+.token-string { color: #34d399; }
+.token-comment { color: #6b7280; font-style: italic; }
+.token-number { color: #fb923c; }
+.token-punctuation { color: #9ca3af; }
+.token-tag { color: #60a5fa; }
+.token-attr { color: #a78bfa; }
+.token-function { color: #818cf8; }
+.token-class { color: #fbbf24; }
+
+/* Custom Typing Caret */
+@keyframes blink {
+  50% { opacity: 0; }
+}
+.typing-caret::after {
+  content: '|';
+  display: inline-block;
+  color: #a78bfa;
+  animation: blink 0.8s infinite;
+  margin-left: 2px;
+}
