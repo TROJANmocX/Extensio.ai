@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Cpu, Terminal, ArrowLeft, RefreshCw, AlertCircle } from "lucide-react";
+import { Terminal, AlertCircle, RefreshCw, ArrowLeft, FolderOpen, Package, History } from "lucide-react";
 
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import Features from "@/components/Features";
-import Pricing from "@/components/Pricing";
-import Footer from "@/components/Footer";
-import Workspace from "@/components/Workspace";
-import Simulator from "@/components/Simulator";
+import Sidebar from "@/components/Sidebar";
+import TopNavbar from "@/components/TopNavbar";
+import DashboardHero from "@/components/DashboardHero";
+import DashboardCards from "@/components/DashboardCards";
+import CodeViewer from "@/components/CodeViewer";
+import SettingsView from "@/components/SettingsView";
+import HomeView from "@/components/HomeView";
+import TemplatesView from "@/components/TemplatesView";
+import SimulatorView from "@/components/SimulatorView";
+import PlaceholderView from "@/components/PlaceholderView";
 
 const API_BASE = "http://localhost:5000";
 
@@ -20,8 +23,10 @@ interface ValidationResult {
   warnings: string[];
 }
 
+export type ViewState = "home" | "generate" | "projects" | "templates" | "simulator" | "marketplace" | "history" | "account";
+
 export default function Home() {
-  const [viewState, setViewState] = useState<"landing" | "workspace">("landing");
+  const [viewState, setViewState] = useState<ViewState>("home");
   const [prompt, setPrompt] = useState("");
   const [files, setFiles] = useState<Record<string, string>>({});
   const [validation, setValidation] = useState<ValidationResult | undefined>(undefined);
@@ -30,6 +35,9 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadLogs, setLoadLogs] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // File viewing state
+  const [selectedFile, setSelectedFile] = useState<{name: string, content: string} | null>(null);
 
   // High-fidelity terminal logging hook
   const triggerLoadingLogs = async (stages: string[]) => {
@@ -40,11 +48,11 @@ export default function Home() {
     }
   };
 
-  // 1. Generation trigger
   const handleGenerate = async (submittedPrompt: string) => {
     setIsLoading(true);
     setErrorMsg(null);
     setPrompt(submittedPrompt);
+    setViewState("generate"); // Ensure we are on the generate view
 
     const stages = [
       "Booting Extensio AI synthesis model...",
@@ -57,13 +65,16 @@ export default function Home() {
       "Synthesis complete! Preparing live code workspace..."
     ];
 
-    // Trigger log animations in parallel
     const logsPromise = triggerLoadingLogs(stages);
 
     try {
+      const apiKey = localStorage.getItem("gemini_api_key") || "";
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (apiKey) headers["x-gemini-api-key"] = apiKey;
+
       const res = await fetch(`${API_BASE}/api/generate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ prompt: submittedPrompt })
       });
 
@@ -72,18 +83,14 @@ export default function Home() {
       }
 
       const data = await res.json();
-      
-      // Await logging animations to finish so the developer experience is premium!
       await logsPromise;
 
       if (data.success && data.files) {
         setFiles(data.files);
         setValidation(data.validation);
-        setViewState("workspace");
       } else {
         throw new Error(data.error || "Unknown compilation failure.");
       }
-
     } catch (err) {
       console.error(err);
       setErrorMsg((err as Error).message || "An unexpected error occurred during extension synthesis.");
@@ -92,7 +99,6 @@ export default function Home() {
     }
   };
 
-  // 2. Continuous Modification trigger
   const handleModify = async (editRequest: string) => {
     setIsLoading(true);
     setErrorMsg(null);
@@ -109,9 +115,13 @@ export default function Home() {
     const logsPromise = triggerLoadingLogs(stages);
 
     try {
+      const apiKey = localStorage.getItem("gemini_api_key") || "";
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (apiKey) headers["x-gemini-api-key"] = apiKey;
+
       const res = await fetch(`${API_BASE}/api/modify`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ files, editRequest })
       });
 
@@ -120,7 +130,6 @@ export default function Home() {
       }
 
       const data = await res.json();
-      
       await logsPromise;
 
       if (data.success && data.files) {
@@ -129,7 +138,6 @@ export default function Home() {
       } else {
         throw new Error(data.error || "Failed to update files mapping.");
       }
-
     } catch (err) {
       console.error(err);
       setErrorMsg((err as Error).message || "Failed to modify extension files.");
@@ -138,7 +146,6 @@ export default function Home() {
     }
   };
 
-  // 3. Download compiler ZIP
   const handleDownload = async () => {
     try {
       const res = await fetch(`${API_BASE}/api/download`, {
@@ -160,193 +167,184 @@ export default function Home() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-
     } catch (err) {
       alert("ZIP compilation failed: " + (err as Error).message);
     }
   };
 
-  return (
-    <div className="min-h-screen flex flex-col relative w-full bg-[#030014] text-gray-100 overflow-x-hidden">
+  const handleOpenFile = (filename: string, content: string) => {
+    setSelectedFile({ name: filename, content });
+  };
+
+  // Helper renderer for the central main area based on viewState
+  const renderMainContent = () => {
+    switch (viewState) {
+      case "home":
+        return <HomeView key="home" onNavigate={setViewState} />;
       
-      {/* Mesh Grid Backdrop */}
-      <div className="absolute inset-0 bg-grid opacity-80 pointer-events-none z-0" />
+      case "templates":
+        return <TemplatesView key="templates" onSelectTemplate={handleGenerate} />;
+      
+      case "simulator":
+        return <SimulatorView key="simulator" files={files} prompt={prompt} />;
+      
+      case "account":
+        return <SettingsView key="account" />;
 
-      {/* Global Navbar */}
-      <Navbar 
-        onDashboardClick={() => {
-          if (viewState === "workspace") {
-            setViewState("landing");
-          } else if (Object.keys(files).length > 0) {
-            setViewState("workspace");
-          } else {
-            // Boot general demo YouTube comment hider extension
-            handleGenerate("Create a Chrome extension that hides YouTube comments");
-          }
-        }} 
-        isDashboardActive={viewState === "workspace"}
-      />
+      case "projects":
+        return <PlaceholderView key="projects" id="projects" title="Projects" description="View, manage, and clone all your previously saved Chrome extensions. Complete with version history." icon={FolderOpen} />;
+      
+      case "marketplace":
+        return <PlaceholderView key="marketplace" id="marketplace" title="Marketplace" description="Explore, remix, and download community-driven Chrome extensions created by other developers." icon={Package} />;
+      
+      case "history":
+        return <PlaceholderView key="history" id="history" title="AI History" description="A complete chronological log of all prompts, generation logs, and modifications made on your account." icon={History} />;
 
-      {/* Main Container */}
-      <main className="flex-1 flex flex-col z-10 w-full relative">
-        <AnimatePresence mode="wait">
-          
-          {/* A. Landing Page View */}
-          {viewState === "landing" && (
+      case "generate":
+        // The Generate view has two substates: no files generated (Hero), and files generated (Workspace Grid)
+        if (Object.keys(files).length === 0) {
+          return (
             <motion.div
-              key="landing-page"
+              key="generate-hero"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col w-full"
+              className="flex-1 flex flex-col items-center justify-center -mt-16 w-full"
             >
-              <Hero onGenerate={handleGenerate} isLoading={isLoading} />
-              
-              {/* Highlight error message on landing if any */}
+              <DashboardHero 
+                prompt={prompt} 
+                setPrompt={setPrompt} 
+                onGenerate={handleGenerate} 
+                isLoading={isLoading} 
+              />
               {errorMsg && (
-                <div className="max-w-2xl mx-auto w-full px-6 mb-8">
-                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex gap-3 text-red-400 text-xs">
+                <div className="w-full max-w-3xl mx-auto px-6 mt-4">
+                  <div className="p-4 bg-[#ef4444]/10 border border-[#ef4444]/20 rounded-xl flex gap-3 text-[#ef4444] text-sm shadow-[0_0_20px_rgba(239,68,68,0.1)]">
                     <AlertCircle className="w-5 h-5 shrink-0" />
                     <div>
-                      <span className="font-bold">Synthesis Error:</span>
+                      <span className="font-bold">Error:</span>
+                      <p className="mt-1 leading-normal">{errorMsg}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          );
+        } else {
+          return (
+            <motion.div
+              key="generate-workspace"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full flex flex-col"
+            >
+              <div className="w-full max-w-7xl mx-auto px-6 pt-10 pb-6 flex items-center justify-between">
+                <button 
+                  onClick={() => {
+                    setFiles({});
+                    setPrompt("");
+                  }}
+                  className="flex items-center gap-2 text-sm text-[#8b8b8b] hover:text-[#f5f5f5] transition-colors group"
+                >
+                  <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                  <span>Start New Generation</span>
+                </button>
+              </div>
+
+              {errorMsg && (
+                <div className="w-full max-w-7xl mx-auto px-6 mb-8">
+                  <div className="p-4 bg-[#ef4444]/10 border border-[#ef4444]/20 rounded-xl flex gap-3 text-[#ef4444] text-sm shadow-[0_0_20px_rgba(239,68,68,0.1)]">
+                    <AlertCircle className="w-5 h-5 shrink-0" />
+                    <div>
+                      <span className="font-bold">Error:</span>
                       <p className="mt-1 leading-normal">{errorMsg}</p>
                     </div>
                   </div>
                 </div>
               )}
 
-              <Features />
-              <Pricing />
-              <Footer />
+              <DashboardCards
+                files={files}
+                validation={validation}
+                isLoading={isLoading}
+                prompt={prompt}
+                onModify={handleModify}
+                onDownload={handleDownload}
+                onOpenFile={handleOpenFile}
+              />
             </motion.div>
-          )}
+          );
+        }
+      
+      default:
+        return null;
+    }
+  };
 
-          {/* B. Dashboard Developer Workspace View */}
-          {viewState === "workspace" && (
-            <motion.div
-              key="workspace-dashboard"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8 flex-1"
-            >
-              {/* Workspace Header */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
-                <div>
-                  <button
-                    onClick={() => setViewState("landing")}
-                    className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 font-semibold mb-2 group cursor-pointer"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-                    Back to Landing
-                  </button>
-                  <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-2">
-                    <span className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Developer Workspace</span>
-                    <span className="text-[10px] font-bold text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded border border-violet-500/20 font-mono">MANIFEST V3 READY</span>
-                  </h1>
-                </div>
+  return (
+    <div className="min-h-screen flex flex-col relative w-full bg-[#000000] text-[#f5f5f5] overflow-x-hidden">
+      <TopNavbar />
 
-                <div className="flex gap-3 text-xs">
-                  <button
-                    onClick={() => handleGenerate(prompt)}
-                    disabled={isLoading}
-                    className="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 rounded-xl font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-40"
-                  >
-                    <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} /> Full Regenerate
-                  </button>
-                </div>
-              </div>
+      <Sidebar currentTab={viewState} onNavigate={(tab) => setViewState(tab as ViewState)} />
 
-              {/* Error Callout if Workspace actions fail */}
-              {errorMsg && (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex gap-3 text-red-400 text-xs">
-                  <AlertCircle className="w-5 h-5 shrink-0" />
-                  <div>
-                    <span className="font-bold">Modification Error:</span>
-                    <p className="mt-1 leading-normal">{errorMsg}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Double Pane Layout: Editor & Live Simulator */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 flex-1 items-stretch">
-                
-                {/* 1 & 2. Explorer and Code workspace (takes 2 of 3 grid cols on wide views) */}
-                <div className="xl:col-span-2">
-                  <Workspace
-                    files={files}
-                    validation={validation}
-                    isLoading={isLoading}
-                    onModify={handleModify}
-                    onDownload={handleDownload}
-                    originalPrompt={prompt}
-                  />
-                </div>
-
-                {/* 3. High fidelity live extension simulator */}
-                <div className="xl:col-span-1">
-                  <Simulator
-                    files={files}
-                    isLoading={isLoading}
-                    prompt={prompt}
-                  />
-                </div>
-
-              </div>
-            </motion.div>
-          )}
-
+      <main className="flex-1 ml-[88px] pt-16 flex flex-col relative z-10 w-full max-w-[calc(100%-88px)] min-h-[calc(100vh-64px)]">
+        <AnimatePresence mode="wait">
+          {renderMainContent()}
         </AnimatePresence>
       </main>
 
-      {/* C. Global Futuristic AI Loading Terminal Overlay */}
+      <CodeViewer
+        isOpen={!!selectedFile}
+        filename={selectedFile?.name || ""}
+        content={selectedFile?.content || ""}
+        onClose={() => setSelectedFile(null)}
+      />
+
       <AnimatePresence>
         {isLoading && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-6 select-none"
+            className="fixed inset-0 z-[200] bg-[#000000]/90 backdrop-blur-md flex items-center justify-center p-6 select-none"
           >
             <motion.div
               initial={{ scale: 0.95, y: 15 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
-              className="w-full max-w-lg glass-panel rounded-2xl border border-white/10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden bg-[#070514]"
+              className="w-full max-w-lg card rounded-2xl overflow-hidden bg-[#121212] shadow-2xl shadow-[#b7ff4a]/10"
             >
-              {/* Terminal Title Bar */}
-              <div className="bg-[#121024] px-4 py-3 border-b border-white/5 flex items-center justify-between">
+              <div className="bg-[#0a0a0a] px-4 py-3 border-b border-[#1f1f1f] flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-violet-400 animate-pulse" />
-                  <span className="text-xs font-bold text-gray-200 font-mono tracking-wide">Extensio Synthesis Terminal</span>
+                  <Terminal className="w-4 h-4 text-[#b7ff4a] animate-pulse" />
+                  <span className="text-xs font-bold text-[#f5f5f5] font-mono tracking-wide">Extensio Synthesis Terminal</span>
                 </div>
                 <div className="flex gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-white/20" />
-                  <div className="w-2 h-2 rounded-full bg-white/20" />
-                  <div className="w-2 h-2 rounded-full bg-white/20" />
+                  <div className="w-2 h-2 rounded-full bg-[#1f1f1f]" />
+                  <div className="w-2 h-2 rounded-full bg-[#1f1f1f]" />
+                  <div className="w-2 h-2 rounded-full bg-[#1f1f1f]" />
                 </div>
               </div>
 
-              {/* Logs Stream */}
-              <div className="p-5 font-mono text-[10px] md:text-xs text-gray-400 flex flex-col gap-2 min-h-64 justify-end">
-                <div className="flex-1 flex flex-col gap-1.5 justify-start text-left overflow-y-auto">
+              <div className="p-5 font-mono text-[11px] md:text-xs text-[#8b8b8b] flex flex-col gap-2 min-h-[250px] justify-end bg-[#050505]">
+                <div className="flex-1 flex flex-col gap-2 justify-start text-left overflow-y-auto">
                   {loadLogs.map((log, index) => (
                     <motion.p
                       key={index}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className={index === loadLogs.length - 1 ? "text-violet-400 font-bold typing-caret" : "text-emerald-500/80"}
+                      className={index === loadLogs.length - 1 ? "text-[#b7ff4a] font-bold typing-caret" : "text-[#b7ff4a]/70"}
                     >
                       {log}
                     </motion.p>
                   ))}
                 </div>
 
-                <div className="border-t border-white/5 pt-4 mt-4 flex items-center justify-between text-[9px] text-gray-500 font-semibold tracking-wider">
+                <div className="border-t border-[#1f1f1f] pt-4 mt-4 flex items-center justify-between text-[10px] text-[#555555] font-semibold tracking-wider">
                   <span>COMPILING BINARIES...</span>
-                  <span className="flex items-center gap-1">
-                    <RefreshCw className="w-3 h-3 animate-spin text-violet-400" />
+                  <span className="flex items-center gap-1 text-[#b7ff4a]">
+                    <RefreshCw className="w-3 h-3 animate-spin" />
                     GEMINI ENGINE ACTIVE
                   </span>
                 </div>
@@ -355,7 +353,6 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }

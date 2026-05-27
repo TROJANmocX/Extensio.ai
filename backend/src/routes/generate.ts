@@ -17,8 +17,10 @@ router.post("/generate", async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
+  const clientApiKey = req.headers['x-gemini-api-key'] as string | undefined;
+
   try {
-    const files = await generateExtensionFromPrompt(prompt);
+    const files = await generateExtensionFromPrompt(prompt, clientApiKey);
     const validation = validateExtensionFiles(files);
 
     res.json({
@@ -53,8 +55,10 @@ router.post("/modify", async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
+  const clientApiKey = req.headers['x-gemini-api-key'] as string | undefined;
+
   try {
-    const updatedFiles = await editExtensionFromPrompt(files, editRequest);
+    const updatedFiles = await editExtensionFromPrompt(files, editRequest, clientApiKey);
     const validation = validateExtensionFiles(updatedFiles);
 
     res.json({

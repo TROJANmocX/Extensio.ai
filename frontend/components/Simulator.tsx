@@ -19,7 +19,7 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
   const [commentsHidden, setCommentsHidden] = useState(true);
   const [adsBlocked, setAdsBlocked] = useState(true);
   const [blockedCount, setBlockedCount] = useState(142);
-  const [themeColor, setThemeColor] = useState("#8b5cf6");
+  const [themeColor, setThemeColor] = useState("#b7ff4a");
   const [customMsg, setCustomMsg] = useState("");
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -97,6 +97,7 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
             ${css}
             /* Override scrollbars inside popup for clean view */
             ::-webkit-scrollbar { width: 4px; }
+            ::-webkit-scrollbar-track { background: transparent; }
             ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
           </style>
         </head>
@@ -174,26 +175,26 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
   };
 
   return (
-    <div className="w-full h-full flex flex-col glass-panel rounded-2xl border border-white/8 overflow-hidden bg-[#0a071d]/60 relative min-h-[480px]">
+    <div className="w-full h-full flex flex-col bg-[#050505] relative min-h-[480px]">
       
       {/* 1. Chrome Mock Browser Titlebar */}
-      <div className="bg-[#120f2b] px-4 py-2 flex items-center gap-3 border-b border-white/5 shrink-0">
+      <div className="bg-[#121212] px-4 py-2 flex items-center gap-3 border-b border-[#1f1f1f] shrink-0">
         <div className="flex gap-1.5 shrink-0">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-          <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#ef4444]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#ffb020]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#b7ff4a]" />
         </div>
 
         {/* Back / Forward Controls */}
-        <div className="flex gap-2 text-gray-500">
+        <div className="flex gap-2 text-[#555555]">
           <ArrowLeft className="w-3.5 h-3.5" />
           <ArrowRight className="w-3.5 h-3.5" />
           <RotateCw className="w-3.5 h-3.5" />
         </div>
 
         {/* URL Bar */}
-        <div className="flex-1 bg-black/40 rounded-md border border-white/5 px-3 py-1 flex items-center gap-1.5 text-[11px] text-gray-400 select-none">
-          <Globe className="w-3 h-3 text-gray-500" />
+        <div className="flex-1 bg-[#1a1a1a] rounded-md border border-[#2a2a2a] px-3 py-1 flex items-center gap-1.5 text-[11px] text-[#8b8b8b] select-none">
+          <Globe className="w-3 h-3 text-[#555555]" />
           <span className="truncate">{currentUrl}</span>
         </div>
 
@@ -204,12 +205,12 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
             id="toolbar_extension_icon"
             className={`w-6 h-6 rounded flex items-center justify-center cursor-pointer transition-all duration-200 relative ${
               isPopupOpen 
-                ? "bg-violet-600/30 border border-violet-500 text-violet-400 shadow-[0_0_10px_rgba(139,92,246,0.3)]" 
-                : "text-gray-400 hover:bg-white/5 border border-transparent hover:text-white"
+                ? "bg-[#b7ff4a]/20 border border-[#b7ff4a]/50 text-[#b7ff4a] shadow-[0_0_10px_rgba(183,255,74,0.3)]" 
+                : "text-[#8b8b8b] hover:bg-[#1f1f1f] border border-transparent hover:text-[#f5f5f5]"
             }`}
           >
             <Cpu className="w-3.5 h-3.5" />
-            <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-violet-400 rounded-full animate-ping" />
+            <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-[#b7ff4a] rounded-full animate-pulse-lime" />
           </button>
 
           {/* 2. Chrome Extension Dropdown Iframe Panel */}
@@ -220,11 +221,11 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 top-7 w-[270px] bg-[#0d0e15] border border-white/10 rounded-xl overflow-hidden shadow-[0_15px_30px_rgba(0,0,0,0.8)] z-50 p-0"
+                className="absolute right-0 top-7 w-[270px] bg-[#121212] border border-[#2a2a2a] rounded-xl overflow-hidden shadow-[0_15px_30px_rgba(0,0,0,0.9)] z-50 p-0"
               >
-                <div className="bg-[#181922] px-3 py-1.5 border-b border-white/5 flex items-center justify-between text-[9px] text-gray-500 font-mono">
+                <div className="bg-[#181818] px-3 py-1.5 border-b border-[#1f1f1f] flex items-center justify-between text-[9px] text-[#555555] font-mono">
                   <span>SANDBOX PREVIEW</span>
-                  <span className="text-violet-400">popup.html</span>
+                  <span className="text-[#b7ff4a]">popup.html</span>
                 </div>
                 <iframe
                   ref={iframeRef}
@@ -241,38 +242,38 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
       </div>
 
       {/* 3. Mock Simulated Tab Page Content */}
-      <div className="flex-1 overflow-y-auto relative bg-[#04020a] select-none p-4">
+      <div className="flex-1 overflow-y-auto relative bg-[#050505] select-none p-4">
         
         {/* Presets Rendering */}
         {simulatedPreset === "youtube" && (
           <div className="w-full max-w-2xl mx-auto flex flex-col gap-3 font-sans">
             {/* Mock Player */}
-            <div className="w-full aspect-video rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center relative overflow-hidden group shadow-lg">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
-                <span className="text-xs text-red-500 font-semibold tracking-wider flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" /> LIVE STREAMING
+            <div className="w-full aspect-video rounded-xl bg-[#0a0a0a] border border-[#1f1f1f] flex items-center justify-center relative overflow-hidden group shadow-lg">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-4">
+                <span className="text-xs text-[#ef4444] font-semibold tracking-wider flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#ef4444] animate-pulse" /> LIVE STREAMING
                 </span>
-                <h4 className="text-sm font-bold text-white mt-1">Lofi Beats for Coding / AI Synthesizing 💫</h4>
+                <h4 className="text-sm font-bold text-[#f5f5f5] mt-1">Lofi Beats for Coding / AI Synthesizing 💫</h4>
               </div>
-              <Play className="w-12 h-12 text-white/50 group-hover:text-white/80 transition-all duration-300" />
+              <Play className="w-12 h-12 text-[#f5f5f5]/50 group-hover:text-[#f5f5f5]/80 transition-all duration-300" />
             </div>
 
             {/* Video Meta Info */}
-            <div className="flex justify-between items-center py-2 border-b border-white/5">
+            <div className="flex justify-between items-center py-2 border-b border-[#1f1f1f]">
               <div>
-                <h2 className="text-xs font-bold text-gray-200">Lofi Coding Station</h2>
-                <p className="text-[10px] text-gray-500">14K Watching Now &bull; Lofi Records</p>
+                <h2 className="text-xs font-bold text-[#f5f5f5]">Lofi Coding Station</h2>
+                <p className="text-[10px] text-[#555555]">14K Watching Now &bull; Lofi Records</p>
               </div>
-              <button className="px-3 py-1 bg-white text-black font-semibold rounded-full text-[10px]">Subscribe</button>
+              <button className="px-3 py-1 bg-[#f5f5f5] text-black font-semibold rounded-full text-[10px]">Subscribe</button>
             </div>
 
             {/* Simulated Dynamic Comments Area */}
             <div className="flex flex-col gap-3">
               <div className="flex justify-between items-center text-xs font-semibold">
-                <span className="flex items-center gap-1.5 text-gray-300">
-                  <MessageSquare className="w-3.5 h-3.5 text-violet-400" /> Comments
+                <span className="flex items-center gap-1.5 text-[#f5f5f5]">
+                  <MessageSquare className="w-3.5 h-3.5 text-[#b7ff4a]" /> Comments
                 </span>
-                <span className="text-gray-500 text-[10px] bg-white/5 px-2 py-0.5 rounded border border-white/5">
+                <span className="text-[#555555] text-[10px] bg-[#121212] px-2 py-0.5 rounded border border-[#1f1f1f]">
                   {commentsHidden ? "Shield Active: Hidden" : "Visible"}
                 </span>
               </div>
@@ -284,12 +285,12 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
-                    className="w-full py-10 rounded-xl border border-dashed border-violet-500/20 bg-violet-950/5 flex flex-col items-center justify-center text-center gap-2"
+                    className="w-full py-10 rounded-xl border border-dashed border-[#b7ff4a]/20 bg-[#b7ff4a]/5 flex flex-col items-center justify-center text-center gap-2"
                   >
-                    <ShieldAlert className="w-8 h-8 text-violet-400/80 animate-pulse" />
+                    <ShieldAlert className="w-8 h-8 text-[#b7ff4a]/80 animate-pulse" />
                     <div>
-                      <p className="text-[11px] font-bold text-violet-300">Comments Shielded</p>
-                      <p className="text-[9px] text-gray-500 max-w-xs mt-1">Your synthesized extension content.js swept the DOM comments container.</p>
+                      <p className="text-[11px] font-bold text-[#b7ff4a]">Comments Shielded</p>
+                      <p className="text-[9px] text-[#8b8b8b] max-w-xs mt-1">Your synthesized extension content.js swept the DOM comments container.</p>
                     </div>
                   </motion.div>
                 ) : (
@@ -305,13 +306,13 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
                       { user: "crypto_guy", comment: "Is there a token for Extensio.ai? Buying now!" },
                       { user: "antigravity", comment: "This live simulator is absolutely perfect." }
                     ].map((c, i) => (
-                      <div key={i} className="flex gap-2 p-2 rounded-lg bg-white/3 border border-white/5 items-start">
-                        <div className="w-6 h-6 rounded-full bg-violet-600/30 flex items-center justify-center text-violet-300 text-[9px] font-bold">
+                      <div key={i} className="flex gap-2 p-2 rounded-lg bg-[#121212] border border-[#1f1f1f] items-start">
+                        <div className="w-6 h-6 rounded-full bg-[#181818] flex items-center justify-center text-[#8b8b8b] text-[9px] font-bold">
                           <User className="w-3 h-3" />
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold text-violet-400">{c.user}</p>
-                          <p className="text-[10px] text-gray-300 mt-0.5">{c.comment}</p>
+                          <p className="text-[9px] font-bold text-[#f5f5f5]">{c.user}</p>
+                          <p className="text-[10px] text-[#8b8b8b] mt-0.5">{c.comment}</p>
                         </div>
                       </div>
                     ))}
@@ -325,25 +326,25 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
         {simulatedPreset === "adblock" && (
           <div className="w-full max-w-2xl mx-auto flex flex-col gap-4 font-sans text-xs">
             {/* Tech News Title */}
-            <div className="py-2 border-b border-white/5 flex justify-between items-center">
-              <span className="font-extrabold tracking-widest text-[9px] uppercase text-emerald-400">TECHNEWS DAILY</span>
-              <span className="text-[9px] text-gray-500">May 26, 2026</span>
+            <div className="py-2 border-b border-[#1f1f1f] flex justify-between items-center">
+              <span className="font-extrabold tracking-widest text-[9px] uppercase text-[#ffb020]">TECHNEWS DAILY</span>
+              <span className="text-[9px] text-[#555555]">May 26, 2026</span>
             </div>
 
             {/* Ads blocked indicator card */}
-            <div className="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl flex items-center justify-between text-[10px]">
-              <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+            <div className="p-3 bg-[#ffb020]/10 border border-[#ffb020]/20 rounded-xl flex items-center justify-between text-[10px]">
+              <span className="text-[#ffb020] font-semibold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#ffb020] shrink-0" />
                 Ad Shield Status
               </span>
-              <span className="text-gray-400 font-mono">
+              <span className="text-[#8b8b8b] font-mono">
                 {adsBlocked ? `Active: Swept ${blockedCount} trackers` : "Suspended"}
               </span>
             </div>
 
             {/* Mock Article Content */}
-            <h1 className="text-sm font-bold text-gray-200">The Rise of Generative Extensions APIs</h1>
-            <p className="text-[10px] text-gray-400 leading-relaxed">
+            <h1 className="text-sm font-bold text-[#f5f5f5]">The Rise of Generative Extensions APIs</h1>
+            <p className="text-[10px] text-[#8b8b8b] leading-relaxed">
               Google Chrome's transition to Manifest V3 mandates strict script parsing...
             </p>
 
@@ -357,17 +358,17 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
                   exit={{ height: 0, opacity: 0 }}
                   className="w-full flex flex-col gap-2 overflow-hidden"
                 >
-                  <div className="w-full py-8 bg-red-950/20 border border-red-500/20 rounded-xl flex flex-col items-center justify-center text-center gap-1 shadow-inner relative animate-shake">
-                    <span className="absolute top-1.5 right-2 text-[8px] bg-red-500/20 text-red-400 px-1 py-0.2 rounded border border-red-500/20">SPONSORED AD</span>
-                    <ShieldAlert className="w-6 h-6 text-red-500" />
-                    <p className="text-[10px] font-bold text-red-400">Win Free Cruise Trips Instantly!!!</p>
-                    <p className="text-[8px] text-gray-500">Click to collect your reward tokens!</p>
+                  <div className="w-full py-8 bg-[#ef4444]/10 border border-[#ef4444]/20 rounded-xl flex flex-col items-center justify-center text-center gap-1 shadow-inner relative animate-shake">
+                    <span className="absolute top-1.5 right-2 text-[8px] bg-[#ef4444]/20 text-[#ef4444] px-1 py-0.2 rounded border border-[#ef4444]/20">SPONSORED AD</span>
+                    <ShieldAlert className="w-6 h-6 text-[#ef4444]" />
+                    <p className="text-[10px] font-bold text-[#ef4444]">Win Free Cruise Trips Instantly!!!</p>
+                    <p className="text-[8px] text-[#8b8b8b]">Click to collect your reward tokens!</p>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <p className="text-[10px] text-gray-400 leading-relaxed">
+            <p className="text-[10px] text-[#8b8b8b] leading-relaxed">
               Our generators analyze permissions, sanitize standard inputs, and bundle scripts without manual scripts configuration...
             </p>
           </div>
@@ -375,30 +376,30 @@ export default function Simulator({ files, isLoading, prompt }: SimulatorProps) 
 
         {simulatedPreset === "custom" && (
           <div className="w-full h-full flex flex-col items-center justify-center text-center gap-4 py-8">
-            <div className="w-12 h-12 rounded-2xl bg-violet-600/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+            <div className="w-12 h-12 rounded-2xl bg-[#b7ff4a]/10 border border-[#b7ff4a]/20 flex items-center justify-center text-[#b7ff4a]">
               <Cpu className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xs font-bold text-gray-200">Custom Extension Testing Node</h3>
-              <p className="text-[10px] text-gray-500 max-w-sm mt-1 leading-relaxed">
+              <h3 className="text-xs font-bold text-[#f5f5f5]">Custom Extension Testing Node</h3>
+              <p className="text-[10px] text-[#8b8b8b] max-w-sm mt-1 leading-relaxed">
                 Click the extension icon in the mock browser toolbar to display your generated popup popup.html.
               </p>
             </div>
 
             {/* Event logger display */}
-            <div className="w-full max-w-sm bg-black/60 border border-white/5 rounded-xl p-3 text-left font-mono text-[9px] text-gray-400 min-h-24">
-              <p className="text-violet-400 border-b border-white/5 pb-1 mb-2 font-bold flex justify-between items-center">
+            <div className="w-full max-w-sm bg-[#0a0a0a] border border-[#1f1f1f] rounded-xl p-3 text-left font-mono text-[9px] text-[#8b8b8b] min-h-24">
+              <p className="text-[#f5f5f5] border-b border-[#1f1f1f] pb-1 mb-2 font-bold flex justify-between items-center">
                 <span>SIMULATOR CONSOLE LOGS</span>
-                <span className="text-[8px] bg-violet-500/10 text-violet-400 px-1 py-0.2 rounded border border-violet-500/20">ACTIVE</span>
+                <span className="text-[8px] bg-[#b7ff4a]/10 text-[#b7ff4a] px-1 py-0.2 rounded border border-[#b7ff4a]/20">ACTIVE</span>
               </p>
-              <p className="text-gray-500">&gt; Extension simulator listening on channels...</p>
-              <p className="text-emerald-400 mt-1">&gt; Loaded manifest.json version 3 successfully</p>
+              <p className="text-[#555555]">&gt; Extension simulator listening on channels...</p>
+              <p className="text-[#b7ff4a] mt-1">&gt; Loaded manifest.json version 3 successfully</p>
               
               {commentsHidden && simulatedPreset === "youtube" && (
-                <p className="text-violet-400 mt-1">&gt; [Event] commentsShield toggled: hide comments</p>
+                <p className="text-[#ffb020] mt-1">&gt; [Event] commentsShield toggled: hide comments</p>
               )}
               {adsBlocked && simulatedPreset === "adblock" && (
-                <p className="text-emerald-400 mt-1">&gt; [Event] adBlockEnabled toggled: block active banners</p>
+                <p className="text-[#b7ff4a] mt-1">&gt; [Event] adBlockEnabled toggled: block active banners</p>
               )}
             </div>
           </div>

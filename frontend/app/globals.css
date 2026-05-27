@@ -1,118 +1,311 @@
 @import "tailwindcss";
 
+/* ══════════════════════════════════════════════════════════
+   EXTENSIO.AI — Futuristic Dark Dashboard Design System
+   ══════════════════════════════════════════════════════════ */
+
 :root {
-  --background: #030014;
-  --foreground: #f3f4f6;
-  --purple-glow: rgba(139, 92, 246, 0.15);
-  --blue-glow: rgba(59, 130, 246, 0.15);
+  --bg-root: #000000;
+  --bg-card: #121212;
+  --bg-card-hover: #181818;
+  --border: #1f1f1f;
+  --border-hover: #2a2a2a;
+
+  --accent-lime: #b7ff4a;
+  --accent-lime-dim: rgba(183, 255, 74, 0.15);
+  --accent-lime-glow: rgba(183, 255, 74, 0.25);
+  --accent-orange: #ffb020;
+  --accent-orange-dim: rgba(255, 176, 32, 0.15);
+
+  --text-primary: #f5f5f5;
+  --text-muted: #8b8b8b;
+  --text-dim: #555555;
+
+  --font-display: 'Bebas Neue', Impact, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-background: var(--bg-root);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 }
 
+/* ── Base ──────────────────────────────────────────────── */
+
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+  background-color: var(--bg-root);
+  color: var(--text-primary);
+  font-family: var(--font-body);
   overflow-x: hidden;
   letter-spacing: -0.01em;
 }
 
-/* Custom Cyber Mesh Grid Background */
-.bg-grid {
-  background-size: 50px 50px;
-  background-image: 
-    linear-gradient(to right, rgba(139, 92, 246, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+/* ── Card System ──────────────────────────────────────── */
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Radial Glow Orbs */
-.purple-orb {
+.card-hover:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(183, 255, 74, 0.08);
+}
+
+.card-hover-lime:hover {
+  border-color: rgba(183, 255, 74, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(183, 255, 74, 0.06);
+}
+
+.card-hover-orange:hover {
+  border-color: rgba(255, 176, 32, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(255, 176, 32, 0.06);
+}
+
+/* ── Glow Effects ─────────────────────────────────────── */
+
+.glow-lime {
+  box-shadow: 0 0 20px rgba(183, 255, 74, 0.15), 0 0 60px rgba(183, 255, 74, 0.05);
+}
+
+.glow-lime-strong {
+  box-shadow: 0 0 25px rgba(183, 255, 74, 0.3), 0 0 80px rgba(183, 255, 74, 0.1);
+}
+
+.glow-orange {
+  box-shadow: 0 0 20px rgba(255, 176, 32, 0.15), 0 0 60px rgba(255, 176, 32, 0.05);
+}
+
+/* ── Button System ────────────────────────────────────── */
+
+.btn-lime {
+  background: var(--accent-lime);
+  color: #000000;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-lime:hover {
+  box-shadow: 0 0 25px rgba(183, 255, 74, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-lime:active {
+  transform: scale(0.97);
+}
+
+.btn-lime:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
+/* ── Sidebar ──────────────────────────────────────────── */
+
+.sidebar-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.sidebar-icon:hover {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.sidebar-icon.active {
+  background: var(--accent-lime-dim);
+  color: var(--accent-lime);
+}
+
+.sidebar-icon.active::before {
+  content: '';
   position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
-  filter: blur(60px);
-  pointer-events: none;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: var(--accent-lime);
+  border-radius: 0 3px 3px 0;
 }
 
-.blue-orb {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
-  filter: blur(60px);
-  pointer-events: none;
-}
+/* ── Scrollbar ────────────────────────────────────────── */
 
-/* Glassmorphism utility */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-panel-hover:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(139, 92, 246, 0.25);
-  box-shadow: 0 0 25px rgba(139, 92, 246, 0.08);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Premium Scrollbar styling matching Cursor and Vercel */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.01);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(183, 255, 74, 0.2);
 }
 
-/* Neon animated borders */
-@keyframes borderPulse {
-  0%, 100% { border-color: rgba(139, 92, 246, 0.2); }
-  50% { border-color: rgba(139, 92, 246, 0.6); }
-}
+/* ── Syntax Highlighting ──────────────────────────────── */
 
-.animate-border-pulse {
-  animation: borderPulse 4s infinite;
-}
+.token-keyword { color: #ff6b9d; font-weight: 500; }
+.token-string { color: #b7ff4a; }
+.token-comment { color: #555555; font-style: italic; }
+.token-number { color: #ffb020; }
+.token-punctuation { color: #8b8b8b; }
+.token-tag { color: #6ec6ff; }
+.token-attr { color: #b7ff4a; }
+.token-function { color: #c084fc; }
+.token-class { color: #ffb020; }
 
-/* Syntax Token Colors (Custom High-Fidelity Highlighting) */
-.token-keyword { color: #f472b6; font-weight: 500; }
-.token-string { color: #34d399; }
-.token-comment { color: #6b7280; font-style: italic; }
-.token-number { color: #fb923c; }
-.token-punctuation { color: #9ca3af; }
-.token-tag { color: #60a5fa; }
-.token-attr { color: #a78bfa; }
-.token-function { color: #818cf8; }
-.token-class { color: #fbbf24; }
+/* ── Typing Caret ─────────────────────────────────────── */
 
-/* Custom Typing Caret */
 @keyframes blink {
   50% { opacity: 0; }
 }
+
 .typing-caret::after {
   content: '|';
   display: inline-block;
-  color: #a78bfa;
+  color: var(--accent-lime);
   animation: blink 0.8s infinite;
   margin-left: 2px;
 }
+
+/* ── Animations ───────────────────────────────────────── */
+
+@keyframes pulse-lime {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(183, 255, 74, 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(183, 255, 74, 0); }
+}
+
+.animate-pulse-lime {
+  animation: pulse-lime 2s infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-card) 25%,
+    var(--bg-card-hover) 50%,
+    var(--bg-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Status Indicators ────────────────────────────────── */
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot-active {
+  background: var(--accent-lime);
+  box-shadow: 0 0 8px rgba(183, 255, 74, 0.5);
+}
+
+.status-dot-warning {
+  background: var(--accent-orange);
+  box-shadow: 0 0 8px rgba(255, 176, 32, 0.5);
+}
+
+.status-dot-error {
+  background: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+/* ── Code Block ───────────────────────────────────────── */
+
+.code-block {
+  background: #0a0a0a;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow: auto;
+}
+
+/* ── File Icons ───────────────────────────────────────── */
+
+.file-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.file-icon-json { background: rgba(255, 176, 32, 0.15); color: #ffb020; }
+.file-icon-js { background: rgba(183, 255, 74, 0.15); color: #b7ff4a; }
+.file-icon-html { background: rgba(110, 198, 255, 0.15); color: #6ec6ff; }
+.file-icon-css { background: rgba(192, 132, 252, 0.15); color: #c084fc; }

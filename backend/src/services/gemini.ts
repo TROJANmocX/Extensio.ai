@@ -302,11 +302,11 @@ chrome.storage.local.get('adBlockEnabled', (data) => {
 /**
  * Sends a generation request to the Gemini API. Falls back to mock structures if no API Key or on error.
  */
-export async function generateExtensionFromPrompt(prompt: string): Promise<Record<string, string>> {
-  const apiKey = process.env.GEMINI_API_KEY;
+export async function generateExtensionFromPrompt(prompt: string, clientApiKey?: string): Promise<Record<string, string>> {
+  const apiKey = clientApiKey || process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
-    console.warn("GEMINI_API_KEY is not defined in environment variables. Falling back to static template generators...");
+    console.warn("No Gemini API key provided via headers or environment variables. Falling back to static template generators...");
     return getFallbackExtension(prompt);
   }
 
@@ -365,12 +365,13 @@ export async function generateExtensionFromPrompt(prompt: string): Promise<Recor
  */
 export async function editExtensionFromPrompt(
   currentFiles: Record<string, string>,
-  editRequest: string
+  editRequest: string,
+  clientApiKey?: string
 ): Promise<Record<string, string>> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = clientApiKey || process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
-    console.warn("GEMINI_API_KEY is not defined. Simulating local prompt edits...");
+    console.warn("No Gemini API key provided. Simulating local prompt edits...");
     return simulateLocalEdit(currentFiles, editRequest);
   }
 
